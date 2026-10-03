@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}About Project | Cloud Network Monitor{% endblock %}
+{% block header_title %}About the Project & Computer Networks Concepts{% endblock %}
+
+{% block content %}
+<!-- Project Overview Card -->
+<div class="panel">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+      Project Overview & Objectives
+    </div>
+    <span class="badge badge-info">College Lab Project</span>
+  </div>
+  <div class="panel-body">
+    <h3 style="font-size: 1.15rem; color: var(--accent-cyan); margin-bottom: 8px;">
+      Cloud-Based Network Monitoring Dashboard
+    </h3>
+    <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 16px;">
+      <strong>Network Monitoring</strong> is the continuous process of reviewing, analyzing, and managing computer network traffic, node availability, latency, and data transmission rates. In enterprise IT and cloud environments, network monitoring ensures high availability (99.999% uptime), pinpoints packet loss bottlenecks, and prevents denial of service before outages affect end-users.
+    </p>
+    <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.7;">
+      This project demonstrates fundamental <strong>Computer Networks (CN)</strong> concepts in an accessible, interactive, and visually appealing web application built with Python Flask, SQLite, and Chart.js.
+    </p>
+  </div>
+</div>
+
+<!-- Architecture & System Flow -->
+<div class="panel">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+        <line x1="6" y1="6" x2="6.01" y2="6"></line>
+        <line x1="6" y1="18" x2="6.01" y2="18"></line>
+      </svg>
+      System Architecture & Data Flow
+    </div>
+  </div>
+  <div class="panel-body">
+    <pre class="arch-box">
++-----------------------------------------------------------------------------------------+
+|                                      USER BROWSER                                       |
+|  [Responsive Dark Dashboard UI] <---> [Chart.js Real-Time Visualizations & AJAX Fetch]  |
++--------------------------------------------▲--------------------------------------------+
+                                             | HTTP / REST API (JSON)
++--------------------------------------------▼--------------------------------------------+
+|                                FLASK BACKEND (app.py)                                   |
+|   • Authentication & Session Management (Werkzeug Password Hashing)                     |
+|   • Routing & RESTful API Controllers (/api/network-status, /api/ping, /api/devices)    |
+|   • Network Prober & Parser (Windows/Linux ICMP ping, sockets, psutil bandwidth)        |
++-------------------------------------▲----------------------------------▲----------------+
+                                      |                                  |
+                                      ▼                                  ▼
+                    +------------------------------------+  +----------------------------+
+                    |        SQLITE DATABASE             |  |   OPERATING SYSTEM & NIC   |
+                    | • users       • devices            |  | • Python socket (AF_INET)  |
+                    | • network_logs • alerts            |  | • Windows subprocess ping  |
+                    |                                    |  | • psutil net_io_counters() |
+                    +------------------------------------+  +----------------------------+
+    </pre>
+  </div>
+</div>
+
+<!-- Core Computer Networks Concepts Demonstrated -->
+<div class="panel">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+      Key Computer Networks (CN) Concepts Demonstrated
+    </div>
+  </div>
+  <div class="panel-body">
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>1. IP Addressing & Subnetting</h4>
+        <p>
+          Demonstrates the distinction between <strong>Private Local IP (LAN)</strong> assigned to network interfaces (e.g., 192.168.x.x, 172.16.x.x, 127.0.0.1) and <strong>Public IP (WAN)</strong> routed over the global internet via Network Address Translation (NAT).
+        </p>
+      </div>
+
+      <div class="concept-card">
+        <h4>2. ICMP Protocol & Ping</h4>
+        <p>
+          Uses the <strong>Internet Control Message Protocol (ICMP)</strong> operating at the Network Layer (Layer 3). Sending ICMP Type 8 Echo Requests and awaiting Type 0 Echo Replies verifies node reachability without needing TCP port handshakes.
+        </p>
+      </div>
+
+      <div class="concept-card">
+        <h4>3. Latency & Round Trip Time (RTT)</h4>
+        <p>
+          Measures the propagation, transmission, and processing delay required for a data packet to travel from the sender to the receiver and back, quantified in milliseconds (ms).
+        </p>
+      </div>
+
+      <div class="concept-card">
+        <h4>4. Packet Loss</h4>
+        <p>
+          Calculates the percentage of packets lost during transit due to network buffer overflows, link degradation, or firewall packet filtering. High packet loss degrades TCP throughput through congestion window backoff.
+        </p>
+      </div>
+
+      <div class="concept-card">
+        <h4>5. Bandwidth vs. Throughput</h4>
+        <p>
+          Monitors physical network card throughput (data sent/received per second using <code>psutil.net_io_counters()</code>) compared to theoretical link capacity (bandwidth).
+        </p>
+      </div>
+
+      <div class="concept-card">
+        <h4>6. Client-Server Architecture</h4>
+        <p>
+          Illustrates decoupled client-server computing where a browser frontend communicates asynchronously via REST JSON endpoints to an application server backed by persistent storage.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cloud Readiness -->
+<div class="panel">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+      </svg>
+      Cloud Concept & Deployment Readiness
+    </div>
+  </div>
+  <div class="panel-body">
+    <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+      This project is built using containerization-ready and 12-factor cloud principles:
+    </p>
+    <ul style="font-size: 0.84rem; color: var(--text-muted); padding-left: 20px; line-height: 1.8;">
+      <li><strong>Cloud Compatibility:</strong> Uses environment variables for secrets and binds to <code>0.0.0.0:$PORT</code> for deployment to platforms like Render, AWS EC2, Heroku, or PythonAnywhere.</li>
+      <li><strong>Cross-Platform Network Probing:</strong> Auto-detects whether the host runs on Windows (<code>ping -n 2 -w 1000</code>) or Cloud Linux (<code>ping -c 2 -W 1</code>).</li>
+      <li><strong>Stateless Web Tier:</strong> Authentication is handled via signed HTTP sessions, and data persists cleanly in SQLite (which easily upgrades to cloud PostgreSQL/MySQL).</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

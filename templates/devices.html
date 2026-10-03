@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Monitored Devices | Cloud Network Monitor{% endblock %}
+{% block header_title %}Connected & Monitored Network Devices{% endblock %}
+
+{% block content %}
+<!-- Add New Device Panel -->
+<div class="panel">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Add New Network Device / Node
+    </div>
+  </div>
+  <div class="panel-body">
+    <form id="addDeviceForm">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) 160px; gap: 14px; align-items: end;">
+        <div>
+          <label class="form-label" for="deviceNameInput">Device / Server Name</label>
+          <input 
+            type="text" 
+            id="deviceNameInput" 
+            class="form-control" 
+            placeholder="e.g. Gateway Router, Web Server" 
+            required
+          >
+        </div>
+
+        <div>
+          <label class="form-label" for="deviceIpInput">IPv4 Address or Hostname</label>
+          <input 
+            type="text" 
+            id="deviceIpInput" 
+            class="form-control" 
+            placeholder="e.g. 192.168.1.1 or example.com" 
+            required
+          >
+        </div>
+
+        <div>
+          <button type="submit" class="btn btn-primary" id="addDeviceSubmitBtn" style="width: 100%; height: 42px;">
+            + Add Device
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Devices Table Panel -->
+<div class="panel">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+        <line x1="8" y1="21" x2="16" y2="21"></line>
+        <line x1="12" y1="17" x2="12" y2="21"></line>
+      </svg>
+      Monitored Devices Inventory
+    </div>
+    <div class="panel-actions">
+      <button class="btn btn-secondary btn-sm" id="checkAllDevicesBtn">
+        ⟳ Check All Devices
+      </button>
+    </div>
+  </div>
+  <div class="panel-body" style="padding: 0;">
+    <div class="table-responsive">
+      <table class="data-table" id="devicesTable">
+        <thead>
+          <tr>
+            <th>Device Name</th>
+            <th>IP Address / Host</th>
+            <th>Status</th>
+            <th>Latency (RTT)</th>
+            <th>Last Checked</th>
+            <th style="text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for dev in devices %}
+            <tr id="device-row-{{ dev.id }}">
+              <td>
+                <span class="table-device-name">{{ dev.name }}</span>
+              </td>
+              <td>
+                <span class="table-device-ip">{{ dev.ip_address }}</span>
+              </td>
+              <td class="device-status-cell">
+                {% if dev.status == 'Online' %}
+                  <span class="badge badge-healthy">Online</span>
+                {% elif dev.status == 'Offline' %}
+                  <span class="badge badge-critical">Offline</span>
+                {% else %}
+                  <span class="badge badge-warning">{{ dev.status }}</span>
+                {% endif %}
+              </td>
+              <td class="device-latency-cell">
+                {{ dev.latency_ms }} ms ({{ dev.packet_loss }}% loss)
+              </td>
+              <td class="device-checked-cell" style="font-size: 0.8rem; color: var(--text-dim);">
+                {{ dev.last_checked }}
+              </td>
+              <td style="text-align: right;">
+                <div style="display: inline-flex; gap: 8px;">
+                  <button class="btn btn-secondary btn-sm btn-check-device" data-id="{{ dev.id }}">
+                    Check
+                  </button>
+                  <button class="btn btn-danger btn-sm btn-delete-device" data-id="{{ dev.id }}">
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                No monitored devices added yet. Use the form above to add your first network device.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

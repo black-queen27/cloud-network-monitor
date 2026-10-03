@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Network Alerts | Cloud Network Monitor{% endblock %}
+{% block header_title %}System Alerts & Incident Feed{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      Network Incidents & Threshold Violations
+    </div>
+    <div class="panel-actions">
+      <button class="btn btn-danger btn-sm" id="clearAlertsBtn">
+        Clear All Alerts
+      </button>
+    </div>
+  </div>
+  <div class="panel-body">
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
+      Automatic alerts triggered by unreachable nodes, packet loss anomalies, or latency spikes exceeding 150 ms.
+    </p>
+
+    <div class="alerts-list" id="alertsContainer">
+      {% for alert in alerts %}
+        <div class="alert-item {{ alert.severity }} {% if alert.is_resolved %}resolved{% endif %}" id="alert-item-{{ alert.id }}">
+          <div class="alert-content">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              {% if alert.severity == 'critical' %}
+                <span class="badge badge-critical">Critical</span>
+              {% elif alert.severity == 'warning' %}
+                <span class="badge badge-warning">Warning</span>
+              {% else %}
+                <span class="badge badge-healthy">Healthy</span>
+              {% endif %}
+              <h4>{{ alert.title }}</h4>
+            </div>
+            <p>{{ alert.message }}</p>
+            <div class="alert-time">
+              Logged at: {{ alert.timestamp }}
+              {% if alert.is_resolved %}
+                <span style="color: var(--accent-green); margin-left: 8px;">✓ Resolved</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center;">
+            {% if not alert.is_resolved %}
+              <button class="btn btn-secondary btn-sm btn-resolve-alert" data-id="{{ alert.id }}">
+                Mark Resolved
+              </button>
+            {% endif %}
+          </div>
+        </div>
+      {% else %}
+        <div style="text-align: center; color: var(--text-muted); padding: 40px; background: rgba(255,255,255,0.01); border-radius: 8px;">
+          ✓ All systems normal. No active network alerts or warnings detected.
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Alert Threshold Legend -->
+<div class="panel">
+  <div class="panel-header">
+    <div class="panel-title">Alert Threshold Criteria & Rules</div>
+  </div>
+  <div class="panel-body">
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4 style="color: var(--accent-red);">🔴 Critical Alert</h4>
+        <p>Triggered when a destination node fails ICMP echo ping replies (100% packet loss) or the WAN internet link drops.</p>
+      </div>
+      <div class="concept-card">
+        <h4 style="color: var(--accent-yellow);">🟡 Warning Alert</h4>
+        <p>Triggered when round-trip latency exceeds 150 ms or partial packet loss (&gt; 0%) is observed on a node.</p>
+      </div>
+      <div class="concept-card">
+        <h4 style="color: var(--accent-green);">🟢 Healthy / Informational</h4>
+        <p>Logged during system startup or when recovery checks succeed.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

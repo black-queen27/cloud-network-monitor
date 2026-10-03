@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Network Monitor (Ping & Latency) | Cloud Network Monitor{% endblock %}
+{% block header_title %}Ping & Latency Diagnostic Utility{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      ICMP Echo & Latency Diagnostic Tool
+    </div>
+    <span class="badge badge-info">Layer 3 / 4 Network Probe</span>
+  </div>
+  <div class="panel-body">
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+      Test round-trip time (RTT), reachability, and packet loss using ICMP (Internet Control Message Protocol) packets.
+    </p>
+
+    <div class="ping-tool-box">
+      <form id="pingForm">
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <input 
+            type="text" 
+            id="targetInput" 
+            class="form-control" 
+            placeholder="Enter Hostname or IP address (e.g. 8.8.8.8 or google.com)" 
+            value="8.8.8.8"
+            style="flex: 1; min-width: 260px;" 
+            required
+          >
+          <button type="submit" class="btn btn-primary" id="checkBtn" style="padding: 10px 24px;">
+            <span>🔍 Check Target</span>
+          </button>
+        </div>
+
+        <div class="quick-targets">
+          <span style="font-size: 0.76rem; color: var(--text-dim); display: flex; align-items: center;">Quick Presets:</span>
+          <span class="quick-tag" data-target="8.8.8.8">Google DNS (8.8.8.8)</span>
+          <span class="quick-tag" data-target="1.1.1.1">Cloudflare (1.1.1.1)</span>
+          <span class="quick-tag" data-target="google.com">Google.com</span>
+          <span class="quick-tag" data-target="127.0.0.1">Localhost (127.0.0.1)</span>
+          <span class="quick-tag" data-target="192.168.1.1">Default Gateway (192.168.1.1)</span>
+          <span class="quick-tag" data-target="192.0.2.1">Unreachable Test IP (192.0.2.1)</span>
+        </div>
+      </form>
+    </div>
+
+    <!-- Diagnostic Results Tiles -->
+    <div style="margin-top: 24px;">
+      <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; color: var(--text-main);">
+        Diagnostics Result:
+      </h3>
+
+      <div class="ping-metrics-row">
+        <div class="ping-metric-tile">
+          <div class="label">Target Host</div>
+          <div class="value" id="pingResultTarget" style="font-size: 1.1rem; color: var(--accent-cyan);">--</div>
+        </div>
+
+        <div class="ping-metric-tile">
+          <div class="label">Resolved IPv4</div>
+          <div class="value" id="pingResultIp" style="font-size: 1.1rem; font-family: monospace;">--</div>
+        </div>
+
+        <div class="ping-metric-tile">
+          <div class="label">Reachability Status</div>
+          <div class="value" style="margin-top: 6px;">
+            <span class="badge badge-info" id="pingResultStatusBadge">Ready</span>
+          </div>
+        </div>
+
+        <div class="ping-metric-tile">
+          <div class="label">Latency (RTT)</div>
+          <div class="value" id="pingResultLatency" style="color: var(--accent-green);">-- ms</div>
+        </div>
+
+        <div class="ping-metric-tile">
+          <div class="label">Packet Loss</div>
+          <div class="value" id="pingResultLoss" style="color: var(--accent-yellow);">-- %</div>
+        </div>
+      </div>
+
+      <!-- Raw Terminal Console Output -->
+      <div style="margin-top: 20px;">
+        <label class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>Raw Ping Command Console (Subprocess Output):</span>
+          <span style="font-size: 0.72rem; color: var(--text-dim);">Operating System: Windows / Linux Compatible</span>
+        </label>
+        <pre class="terminal-view" id="terminalOutput">Click "Check Target" or select a preset to execute an ICMP ping diagnostic probe.</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Educational Notes on Ping & Latency -->
+<div class="panel">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+      Computer Networks Concept: How Ping Works
+    </div>
+  </div>
+  <div class="panel-body">
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>1. ICMP Echo Request</h4>
+        <p>
+          The client sends an ICMP Echo Request packet (Type 8) encapsulated inside an IPv4 datagram to the destination host's IP address.
+        </p>
+      </div>
+      <div class="concept-card">
+        <h4>2. ICMP Echo Reply</h4>
+        <p>
+          If the target is alive and reachable, its TCP/IP networking stack responds with an ICMP Echo Reply packet (Type 0).
+        </p>
+      </div>
+      <div class="concept-card">
+        <h4>3. Round Trip Time (RTT)</h4>
+        <p>
+          The time difference between transmitting the request packet and receiving the reply is measured in milliseconds as latency (RTT).
+        </p>
+      </div>
+      <div class="concept-card">
+        <h4>4. Packet Loss</h4>
+        <p>
+          If reply packets do not return before the timeout threshold, packet loss occurs, signaling network congestion or firewall blockage.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

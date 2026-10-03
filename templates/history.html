@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Monitoring History | Cloud Network Monitor{% endblock %}
+{% block header_title %}Network Check & Latency History{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+      </svg>
+      Historical Network Diagnostic Logs
+    </div>
+    <div class="panel-actions">
+      <button class="btn btn-secondary btn-sm" onclick="exportHistoryToCSV()">
+        📥 Export CSV
+      </button>
+      <button class="btn btn-danger btn-sm" id="clearHistoryBtn">
+        Clear History
+      </button>
+    </div>
+  </div>
+  <div class="panel-body" style="padding: 0;">
+    <!-- Filter Bar -->
+    <div style="padding: 12px 20px; border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.01);">
+      <input 
+        type="text" 
+        id="historyFilter" 
+        class="form-control" 
+        placeholder="Filter history by target name, IP address, or status..." 
+        style="max-width: 400px; padding: 6px 12px; font-size: 0.82rem;"
+        onkeyup="filterHistoryTable()"
+      >
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table" id="historyTable">
+        <thead>
+          <tr>
+            <th>Date & Time</th>
+            <th>Target Name / Host</th>
+            <th>IP Address</th>
+            <th>Status</th>
+            <th>Latency (ms)</th>
+            <th>Packet Loss</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+            <tr>
+              <td style="font-size: 0.8rem; color: var(--text-dim); font-family: monospace;">
+                {{ log.timestamp }}
+              </td>
+              <td>
+                <span class="table-device-name">{{ log.target }}</span>
+              </td>
+              <td>
+                <span class="table-device-ip">{{ log.ip_address }}</span>
+              </td>
+              <td>
+                {% if log.status == 'Reachable' or log.status == 'Online' %}
+                  <span class="badge badge-healthy">{{ log.status }}</span>
+                {% elif log.status == 'Unreachable' or log.status == 'Offline' %}
+                  <span class="badge badge-critical">{{ log.status }}</span>
+                {% else %}
+                  <span class="badge badge-warning">{{ log.status }}</span>
+                {% endif %}
+              </td>
+              <td style="font-weight: 600;">
+                {{ log.latency_ms }} ms
+              </td>
+              <td>
+                {% if log.packet_loss > 0 %}
+                  <span style="color: var(--accent-red); font-weight: 600;">{{ log.packet_loss }}%</span>
+                {% else %}
+                  <span style="color: var(--accent-green);">0.0%</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                No history logs recorded yet. Perform ping checks on the Monitor or Dashboard to populate history.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// Filter table rows by search keyword
+function filterHistoryTable() {
+  const query = document.getElementById("historyFilter").value.toLowerCase();
+  const rows = document.querySelectorAll("#historyTable tbody tr");
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(query) ? "" : "none";
+  });
+}
+
+// Clear history action
+document.getElementById("clearHistoryBtn")?.addEventListener("click", () => {
+  if (confirm("Are you sure you want to clear all network monitoring history?")) {
+    fetch("/api/clear-history", { method: "POST" })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          window.location.reload();
+        }
+      })
+      .catch(err => alert("Error: " + err.message));
+  }
+});
+
+// Client-side CSV export
+function exportHistoryToCSV() {
+  const rows = document.querySelectorAll("#historyTable tr");
+  let csvContent = "";
+  rows.forEach(row => {
+    const cols = row.querySelectorAll("th, td");
+    const rowData = [];
+    cols.forEach(col => {
+      let text = col.innerText.replace(/(\r\n|\n|\r)/gm, " ").trim();
+      rowData.push(`"${text.replace(/"/g, '""')}"`);
+    });
+    if (rowData.length) {
+      csvContent += rowData.join(",") + "\r\n";
+    }
+  });
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", `network_monitoring_logs_${new Date().toISOString().slice(0,10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+</script>
+{% endblock %}
